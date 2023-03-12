@@ -7,6 +7,8 @@ const server = http.createServer(app)
 const socket = require('socket.io')
 const formatmessage = require('./utils/messages')
 const io = socket(server)
+const {userjoin , getcurrentuser } = require('./utils/users')
+
 
 app.use(express.static(path.join(__dirname,'/public')))
 
@@ -14,9 +16,19 @@ app.use(express.static(path.join(__dirname,'/public')))
 io.on('connection',(socket)=>{
     
 
-    socket.emit('message',formatmessage('Chat Bot','welcome to chatcord'))
-    socket.broadcast.emit('message',formatmessage('Chat Bot','a user has joined'))
+    socket.on('joinroom',({username, room})=>{
+       
+        const user = userjoin(socket.id ,username,room)
+       
+        socket.join(user.room)
+        socket.emit('message',formatmessage('Chat Bot','welcome to chatcord'))
+        socket.broadcast.to(user.room).emit('message',formatmessage('Chat Bot',`${user.username} has joined`))
+        
+        
     
+        
+
+    })
 
     socket.on('chat-message',(msg)=>{
         io.emit('message',formatmessage('lol',msg))

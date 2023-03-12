@@ -9,6 +9,14 @@ socket.on('message',(message)=>{
   chatmessages.scrollTop = chatmessages.scrollHeight
 })
 
+const {username , room } = Qs.parse(location.search,{
+  ignoreQueryPrefix: true
+})
+
+console.log(username, room)
+
+
+socket.emit('joinroom',{username,room})
 
 chatform.addEventListener('submit',(e)=>{
   e.preventDefault()
